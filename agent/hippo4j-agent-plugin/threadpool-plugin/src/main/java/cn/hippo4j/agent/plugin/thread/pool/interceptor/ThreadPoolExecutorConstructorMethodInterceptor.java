@@ -17,14 +17,15 @@
 
 package cn.hippo4j.agent.plugin.thread.pool.interceptor;
 
-import cn.hippo4j.agent.core.conf.Config;
-import cn.hippo4j.agent.core.logging.api.ILog;
-import cn.hippo4j.agent.core.logging.api.LogManager;
 import cn.hippo4j.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import cn.hippo4j.agent.core.plugin.interceptor.enhance.InstanceConstructorInterceptor;
-import cn.hippo4j.common.executor.ThreadPoolExecutorRegistry;
 import cn.hippo4j.agent.core.util.CollectionUtil;
 import cn.hippo4j.agent.core.util.StringUtil;
+import cn.hippo4j.common.conf.Config;
+import cn.hippo4j.common.executor.ThreadPoolExecutorRegistry;
+import cn.hippo4j.common.logging.api.ILog;
+import cn.hippo4j.common.logging.api.LogManager;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,7 +52,16 @@ public class ThreadPoolExecutorConstructorMethodInterceptor implements InstanceC
         }
         StackTraceElement declaredClassStackTraceElement = stackTraceElements.get(0);
         String declaredClassName = declaredClassStackTraceElement.getClassName();
-        Class<?> declaredClass = Thread.currentThread().getContextClassLoader().loadClass(declaredClassName);
+        Class<?> declaredClass = null;
+        try {
+            declaredClass = Thread.currentThread().getContextClassLoader().loadClass(declaredClassName);
+        } catch (ClassNotFoundException e) {
+            // The thread pool in the Agent plug-in is loaded by AgentclassLodaer.
+            // Due to the delegation model, it can only be searched upwards, so searching here will result in ClassNotFount.
+            // Because the parent of AgentClassLoader is AppclassLoder, it is ignored here ,skip the enhancement logic
+            LOGGER.debug("searching {} result in ClassNotFount , so skip the enhancement logic", declaredClassName);
+            return;
+        }
         ThreadPoolExecutorRegistry.REFERENCED_CLASS_MAP.put((ThreadPoolExecutor) objInst, declaredClass);
     }
 

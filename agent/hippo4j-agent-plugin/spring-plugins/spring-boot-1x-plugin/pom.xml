@@ -13,7 +13,6 @@
 
     <properties>
         <spring.boot.version>1.5.22.RELEASE</spring.boot.version>
-        <apollo.version>1.9.1</apollo.version>
     </properties>
 
     <dependencyManagement>
@@ -30,13 +29,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>cn.hippo4j</groupId>
-            <artifactId>hippo4j-agent-spring-plugin-common</artifactId>
-            <scope>provided</scope>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <version>${spring.boot.version}</version>
@@ -45,9 +37,8 @@
 
         <dependency>
             <groupId>cn.hippo4j</groupId>
-            <artifactId>hippo4j-threadpool-config-spring-boot-1x-starter</artifactId>
+            <artifactId>hippo4j-agent-spring-plugin-common</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
